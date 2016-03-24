@@ -11,7 +11,7 @@ const chaifs = require('chai-fs')
 chai.use(chaifs)
 
 // Functions being tested
-const stringifyHtml = require('../../lib/stringifyHtml')
+const stringifyHtml = require('../../lib/stringifyHtmlFiles')
 const makeFilesObj = require('../../lib/makeFilesObj')
 const hashFilesObj = require('../../lib/hashFilesObj')
 const writeJsDL = require('../../lib/writeJsDL')
@@ -50,7 +50,7 @@ describe('stringifyHtml', () => {
 
 describe('makeFilesObj', function () {
   it('should return array of files in directory', function () {
-    const array = makeFilesObj(path.join(__dirname + '/test-dir'), 'files/')
+    const array = makeFilesObj(path.join(__dirname, '/test-dir'), 'files/')
 
     assert.deepEqual({
       'files/index.html': {fileOnServer: `${__dirname}/test-dir/index.html`},
