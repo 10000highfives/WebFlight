@@ -1,10 +1,18 @@
-var totalSeeds = 4;
+var totalSeeds = 5;
+console.log('xurls', undefined)
 var http = require("http");
  var WebTorrent = require("webtorrent");
 var client = new WebTorrent();
 
 
       client.seed('/Users/Baoyee/Codesmith/WebFlight/test/test-website/img/bird1.jpg', function(torrent) {
+        --totalSeeds;
+        console.log('🐣 ', torrent.files[0].name, ' now seeding at hash ', torrent.infoHash);
+
+        if (!totalSeeds) console.log("🕊 all seeds active")
+      });
+
+      client.seed('/Users/Baoyee/Codesmith/WebFlight/test/test-website/img/bird1a.jpg', function(torrent) {
         --totalSeeds;
         console.log('🐣 ', torrent.files[0].name, ' now seeding at hash ', torrent.infoHash);
 
@@ -42,4 +50,4 @@ var client = new WebTorrent();
         }
       });
     });
-  }, 60000);
+  }, 600000);

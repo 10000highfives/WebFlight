@@ -9,6 +9,7 @@ const makeFilesObj = require('./lib/makeFilesObj')
 const hashFilesObj = require('./lib/hashFilesObj')
 const writeJsUL = require('./lib/writeJsUL')
 const replaceHtml = require('./lib/replaceHtml')
+const addStatusBar = require('./lib/addStatusBar')
 const writeNewHtml = require('./lib/writeNewHtml')
 const botGenerator = require(('./src/botGenerator'))
 
@@ -22,6 +23,7 @@ const botGenerator = require(('./src/botGenerator'))
 *   wfPath: String             (optional - defaults to '/wfPath')
 *   wfRoute: String            (optional - defaults to '/wfRoute')
 *   seedScript: String         (optional - defaults to 'wf-seed.js')
+*   statusBar: Boolean         (optional - defaults to true)
 *
 * @param {string} serverRoot - path to root folder
 */
@@ -66,6 +68,7 @@ function WebFlight (options, serverRoot) {
   this.prepCount = Math.floor(this.userCount * 0.75)  // non-configurable (start bots)
   this.stopCount = Math.floor(this.userCount * 0.50)  // non-configurable (kill bots, redirect back)
 
+  this.statusBar = options.statusBar || true // default
   console.log('wfobj', this)
 
   if (!this.siteUrl) console.error('Error: WebFlight options object requires "siteUrl" property')
@@ -75,16 +78,31 @@ function WebFlight (options, serverRoot) {
 }
 
 WebFlight.prototype.init = function () {
-  const htmlFiles = Object.keys(this.routes).map((route) => {
-    return this.routes[route]
-  })
-  const htmlStrings = stringifyHtmlFiles(htmlFiles)
-  const filesObj = makeFilesObj(this.assetsPath, this.assetsRoute)
+  if (this.statusBar) {
+    const htmlFiles = Object.keys(this.routes).map((route) => {
+      return this.routes[route]
+    })
+    const htmlStrings = stringifyHtmlFiles(htmlFiles)
+    const filesObj = makeFilesObj(this.assetsPath, this.assetsRoute)
 
-  hashFilesObj(filesObj)
+    hashFilesObj(filesObj)
+    .then(writeJsUL.bind(null, this.seedScript, this.siteUrl, this.stopCount))
+    .then(replaceHtml.bind(null, htmlStrings, htmlFiles))
+    // --BELOW: the new script to add items
+    .then(addStatusBar.bind(null))
+    .then(writeNewHtml.bind(null, this.htmlOutput))
+  } else { // BELOW: previous version
+    const htmlFiles = Object.keys(this.routes).map((route) => {
+      return this.routes[route]
+    })
+    const htmlStrings = stringifyHtmlFiles(htmlFiles)
+    const filesObj = makeFilesObj(this.assetsPath, this.assetsRoute)
+
+    hashFilesObj(filesObj)
     .then(writeJsUL.bind(null, this.seedScript, this.siteUrl, this.stopCount))
     .then(replaceHtml.bind(null, htmlStrings, htmlFiles))
     .then(writeNewHtml.bind(null, this.htmlOutput))
+  }
 }
 
 WebFlight.prototype.redirect = function (req, res, next) {
