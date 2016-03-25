@@ -1,6 +1,5 @@
 const cheerio = require('cheerio')
 
-
 var file = [<html>
   <head>
     <!-- <script type='text/javascript' src="jquery.js"></script> -->
