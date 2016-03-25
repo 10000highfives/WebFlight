@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "test": "standard && mocha test/tests/wfstart.js",
-    "start": "node server/server.js",
     "test-start": "node test/test-website/server.js"
   },
   "standard": {
@@ -46,6 +45,7 @@
     "parse-torrent": "^5.7.3",
     "sha1": "^1.1.1",
     "webtorrent": "^0.82.1",
+    "ejs": "^2.4.1",
     "xvfb": "^0.2.3"
   },
   "devDependencies": {
